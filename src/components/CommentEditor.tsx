@@ -13,7 +13,6 @@ import {
   Award,
   MessageCircle,
   Eye,
-  EyeOff,
   ThumbsDown,
   Languages,
   Search,

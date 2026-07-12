@@ -37,7 +37,7 @@ export function ExportDialog({ commentRef, onClose }: ExportDialogProps) {
       const element = commentRef.current
 
       // Pré-carrega imagens externas como data URLs para evitar CORS
-      const images = element.querySelectorAll('img[src]')
+      const images = element.querySelectorAll('img[src]') as NodeListOf<HTMLImageElement>
       const imagePromises = Array.from(images).map(async (img) => {
         const src = img.getAttribute('src')
         if (!src || src.startsWith('data:')) return
@@ -95,7 +95,7 @@ export function ExportDialog({ commentRef, onClose }: ExportDialogProps) {
             transformOrigin: 'top left',
           },
           scale: scale,
-          bgColor: transparent ? undefined : '#ffffff',
+          bgcolor: transparent ? undefined : '#ffffff',
         })
       } finally {
         // Remove o <style> injetado — garantido mesmo se toPng falhar

@@ -103,9 +103,6 @@ export function CanvasArea({ comment, canvas, onUpdateCanvas }: CanvasAreaProps)
     onUpdateCanvas('showGrid', !canvas.showGrid)
   }
 
-  const handleExport = () => {
-    setShowExport(true)
-  }
 
   return (
     <div

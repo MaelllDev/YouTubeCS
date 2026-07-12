@@ -206,8 +206,8 @@ async function searchViaHtmlScraping(
     const ogTitleMatch = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/)
     const channelName = ogTitleMatch ? ogTitleMatch[1] : handle.replace('@', '')
 
-    // Extrai o channel ID do HTML (presente em ytInitialData ou meta tags)
-    const channelId = await extractChannelIdFromHtml(html, handle)
+      // Extrai o channel ID do HTML (presente em ytInitialData ou meta tags)
+      const channelId = await extractChannelIdFromHtml(html)
 
     return {
       channel: {
@@ -249,7 +249,7 @@ async function extractChannelIdFromPage(handle: string): Promise<string | null> 
   }
 
   if (html) {
-    return extractChannelIdFromHtml(html, handle)
+      return extractChannelIdFromHtml(html)
   }
 
   return null
@@ -259,7 +259,7 @@ async function extractChannelIdFromPage(handle: string): Promise<string | null> 
  * Extrai o channel ID do HTML da página do YouTube.
  * Procura em: ytInitialData, meta tags, externalId, etc.
  */
-function extractChannelIdFromHtml(html: string, handle: string): string | null {
+function extractChannelIdFromHtml(html: string): string | null {
   // Tenta extrair do ytInitialData (embedded JSON)
   const ytDataMatch = html.match(/ytInitialData\s*=\s*({[^;]+});/)
   if (ytDataMatch) {
@@ -293,8 +293,7 @@ export async function searchChannelAnyMethod(
   input: string,
   apiKey?: string
 ): Promise<{ channel: ChannelInfo | null; method: 'api' | 'rss' | 'html' | null; error?: string }> {
-  const handle = parseYouTubeInput(input)
-  if (!handle) return { channel: null, method: null, error: 'Não foi possível identificar o canal nesta URL.' }
+  if (!parseYouTubeInput(input)) return { channel: null, method: null, error: 'Não foi possível identificar o canal nesta URL.' }
 
   // 1º: YouTube Data API v3 (requer API Key)
   if (apiKey) {
