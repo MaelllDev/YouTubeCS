@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Heart, ThumbsUp, ThumbsDown, MessageCircle, Languages, Pin, Award } from 'lucide-react'
 import type { CommentData, CanvasSettings } from '../types'
@@ -10,22 +10,34 @@ interface YouTubeCommentProps {
 }
 
 function Avatar({ src, name }: { src: string; name: string }) {
-  const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'U')}&background=ff4444&color=fff&bold=true&size=80`
+  const initials = (name || 'U')
+    .split(' ')
+    .map(w => w[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join('')
+    .toUpperCase()
+  const [imgError, setImgError] = useState(false)
+
+  if (!src || imgError) {
+    return (
+      <div className="w-[40px] h-[40px] rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-br from-[#ff4444] to-[#cc0000] flex items-center justify-center">
+        <span className="text-white text-sm font-bold select-none">
+          {initials || '?'}
+        </span>
+      </div>
+    )
+  }
 
   return (
     <div className="w-[40px] h-[40px] rounded-full overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-[#333]">
       <img
-        src={src || fallbackUrl}
+        key={src}
+        src={src}
         alt={name}
         className="w-full h-full object-cover"
         loading="lazy"
-        onError={(e) => {
-          const target = e.currentTarget
-          if (!target.dataset.fallbackAttempted) {
-            target.dataset.fallbackAttempted = 'true'
-            target.src = fallbackUrl
-          }
-        }}
+        onError={() => setImgError(true)}
       />
     </div>
   )

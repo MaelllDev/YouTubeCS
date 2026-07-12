@@ -139,7 +139,7 @@ function SelectButton({
 
 export function SidebarRight({ canvas, theme, onUpdateCanvas, onThemeChange }: SidebarRightProps) {
   return (
-    <div className="h-full overflow-y-auto scrollbar-thin">
+    <div>
       <div className="p-4 space-y-5">
         {/* Theme */}
         <div>

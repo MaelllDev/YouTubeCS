@@ -275,24 +275,24 @@ function App() {
               exit="hiddenLeft"
               onAnimationStart={() => setLeftAnimating(true)}
               onAnimationComplete={() => setLeftAnimating(false)}
-              className={`bg-white dark:bg-[#121212] border-r border-gray-200 dark:border-[#333] overflow-hidden flex-shrink-0 ${
+              className={`bg-white dark:bg-[#121212] border-r border-gray-200 dark:border-[#333] flex flex-col h-full flex-shrink-0 ${
                 isMobile ? 'absolute inset-y-0 left-0 z-30' : 'relative'
               }`}
             >
+              {/* Editor Header */}
+              <div className="h-9 border-b border-gray-200 dark:border-[#333] flex items-center px-4 flex-shrink-0">
+                <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-[#666] flex items-center gap-2">
+                  <span className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${leftAnimating ? 'bg-[#ff4444]' : 'bg-green-500'}`} />
+                  Editor
+                </span>
+              </div>
               <motion.div
-                className={`h-full ${isMobile ? 'w-full' : 'w-[320px]'}`}
+                className={`flex-1 overflow-y-auto min-h-0 ${isMobile ? 'w-full' : 'w-[320px]'}`}
                 variants={contentVariants}
                 initial="hidden"
                 animate="visible"
               >
-                {/* Editor Header */}
-                <div className="h-9 border-b border-gray-200 dark:border-[#333] flex items-center px-4 flex-shrink-0">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-[#666] flex items-center gap-2">
-                    <span className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${leftAnimating ? 'bg-[#ff4444]' : 'bg-green-500'}`} />
-                    Editor
-                  </span>
-                </div>
-                <motion.div variants={contentVariants}>
+                <div className="min-h-0">
                   <CommentEditor
                     data={commentData}
                     onUpdate={updateComment}
@@ -300,7 +300,7 @@ function App() {
                     onUpdateLikes={updateLikes}
                     onSetAvatar={setAvatar}
                   />
-                </motion.div>
+                </div>
               </motion.div>
             </motion.aside>
           )}
@@ -339,31 +339,31 @@ function App() {
               exit="hiddenRight"
               onAnimationStart={() => setRightAnimating(true)}
               onAnimationComplete={() => setRightAnimating(false)}
-              className={`bg-white dark:bg-[#121212] border-l border-gray-200 dark:border-[#333] overflow-hidden flex-shrink-0 ${
+              className={`bg-white dark:bg-[#121212] border-l border-gray-200 dark:border-[#333] flex flex-col h-full flex-shrink-0 ${
                 isMobile ? 'absolute inset-y-0 right-0 z-30' : 'relative'
               }`}
             >
+              {/* Settings Header */}
+              <div className="h-9 border-b border-gray-200 dark:border-[#333] flex items-center px-4 flex-shrink-0">
+                <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-[#666] flex items-center gap-2">
+                  <span className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${rightAnimating ? 'bg-[#ff4444]' : 'bg-green-500'}`} />
+                  Configurações
+                </span>
+              </div>
               <motion.div
-                className={`h-full ${isMobile ? 'w-full' : 'w-[280px]'}`}
+                className={`flex-1 overflow-y-auto min-h-0 ${isMobile ? 'w-full' : 'w-[280px]'}`}
                 variants={contentVariants}
                 initial="hidden"
                 animate="visible"
               >
-                {/* Settings Header */}
-                <div className="h-9 border-b border-gray-200 dark:border-[#333] flex items-center px-4 flex-shrink-0">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-[#666] flex items-center gap-2">
-                    <span className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${rightAnimating ? 'bg-[#ff4444]' : 'bg-green-500'}`} />
-                    Configurações
-                  </span>
-                </div>
-                <motion.div variants={contentVariants}>
+                <div className="min-h-0">
                   <SidebarRight
                     canvas={canvasSettings}
                     theme={theme}
                     onUpdateCanvas={updateCanvas}
                     onThemeChange={handleThemeChange}
                   />
-                </motion.div>
+                </div>
               </motion.div>
             </motion.aside>
           )}

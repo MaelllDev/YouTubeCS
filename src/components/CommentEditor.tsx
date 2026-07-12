@@ -189,7 +189,7 @@ export function CommentEditor({ data, onUpdate, onUpdateText, onUpdateLikes, onS
   }
 
   return (
-    <div className="h-full overflow-y-auto scrollbar-thin">
+    <div>
       <div className="p-4 space-y-5">
         {/* Section: Channel Search */}
         <div>
