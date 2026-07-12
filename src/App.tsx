@@ -1,10 +1,8 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, type Variants } from 'framer-motion'
 import {
-  PanelLeftOpen,
-  PanelLeftClose,
-  PanelRightOpen,
-  PanelRightClose,
+  ChevronRight,
+  ChevronLeft,
   Layout,
   RotateCcw,
   Download,
@@ -14,7 +12,7 @@ import {
   Redo2,
   Sparkles,
   Gamepad2,
-  Github,
+  Code2,
 } from 'lucide-react'
 import { CommentEditor } from './components/CommentEditor'
 import { CanvasArea } from './components/CanvasArea'
@@ -47,6 +45,8 @@ function App() {
   const [theme, setTheme] = useState<ThemeMode>('light')
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' } | null>(null)
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
+  const [leftAnimating, setLeftAnimating] = useState(false)
+  const [rightAnimating, setRightAnimating] = useState(false)
 
   useEffect(() => {
     const handleResize = () => {
@@ -61,6 +61,62 @@ function App() {
     handleResize()
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
+  // Panel animation variants
+  const panelVariants: Variants = {
+    hiddenLeft: {
+      width: 0,
+      opacity: 0,
+      x: -20,
+      transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] }
+    },
+    visibleLeft: {
+      width: isMobile ? '100%' : 320,
+      opacity: 1,
+      x: 0,
+      transition: {
+        type: 'spring',
+        damping: 22,
+        stiffness: 260,
+        mass: 0.8,
+        opacity: { duration: 0.15 }
+      }
+    },
+    hiddenRight: {
+      width: 0,
+      opacity: 0,
+      x: 20,
+      transition: { duration: 0.2, ease: [0.4, 0, 0.2, 1] }
+    },
+    visibleRight: {
+      width: isMobile ? '100%' : 280,
+      opacity: 1,
+      x: 0,
+      transition: {
+        type: 'spring',
+        damping: 22,
+        stiffness: 260,
+        mass: 0.8,
+        opacity: { duration: 0.15 }
+      }
+    },
+  }
+
+  // Content fade-in animation
+  const contentVariants: Variants = {
+    hidden: { opacity: 0, y: 6 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { delay: 0.08, duration: 0.2 }
+    }
+  }
+
+  // Backdrop overlay variant
+  const backdropVariants: Variants = {
+    hidden: { opacity: 0, transition: { duration: 0.15 } },
+    visible: { opacity: 1, transition: { duration: 0.2 } }
+  }
 
   const showToast = useCallback((message: string, type: 'success' | 'info' = 'info') => {
     setToast({ message, type })
@@ -138,10 +194,13 @@ function App() {
               if (isMobile && !leftOpen) setRightOpen(false)
             }}
             className="p-1.5 hover:bg-gray-100 dark:hover:bg-[#272727] rounded-lg transition-colors text-gray-500 dark:text-[#888]"
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.85 }}
+            whileHover={{ scale: 1.05 }}
+            animate={{ rotate: leftOpen ? 0 : -180 }}
+            transition={{ type: 'spring', damping: 15, stiffness: 200 }}
             title={leftOpen ? 'Fechar editor' : 'Abrir editor'}
           >
-            {leftOpen ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
+            <ChevronLeft size={18} />
           </motion.button>
 
           <div className="flex items-center gap-2 ml-1">
@@ -177,45 +236,72 @@ function App() {
               if (isMobile && !rightOpen) setLeftOpen(false)
             }}
             className="p-1.5 hover:bg-gray-100 dark:hover:bg-[#272727] rounded-lg transition-colors text-gray-500 dark:text-[#888]"
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.85 }}
+            whileHover={{ scale: 1.05 }}
+            animate={{ rotate: rightOpen ? 0 : 180 }}
+            transition={{ type: 'spring', damping: 15, stiffness: 200 }}
             title={rightOpen ? 'Fechar configurações' : 'Abrir configurações'}
           >
-            {rightOpen ? <PanelRightClose size={18} /> : <PanelRightOpen size={18} />}
+            <ChevronRight size={18} />
           </motion.button>
         </div>
       </motion.header>
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden relative">
+        {/* Left Sidebar Backdrop (mobile) */}
+        <AnimatePresence>
+          {leftOpen && isMobile && (
+            <motion.div
+              key="left-backdrop"
+              variants={backdropVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              className="absolute inset-0 z-20 bg-black/40 backdrop-blur-sm"
+              onClick={() => setLeftOpen(false)}
+            />
+          )}
+        </AnimatePresence>
+
         {/* Left Sidebar */}
         <AnimatePresence initial={false}>
           {leftOpen && (
             <motion.aside
               key="left-sidebar"
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: isMobile ? '100%' : 320, opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              variants={panelVariants}
+              initial="hiddenLeft"
+              animate="visibleLeft"
+              exit="hiddenLeft"
+              onAnimationStart={() => setLeftAnimating(true)}
+              onAnimationComplete={() => setLeftAnimating(false)}
               className={`bg-white dark:bg-[#121212] border-r border-gray-200 dark:border-[#333] overflow-hidden flex-shrink-0 ${
-                isMobile ? 'absolute inset-0 z-30' : 'relative'
+                isMobile ? 'absolute inset-y-0 left-0 z-30' : 'relative'
               }`}
             >
-              <div className={`h-full ${isMobile ? 'w-full' : 'w-[320px]'}`}>
+              <motion.div
+                className={`h-full ${isMobile ? 'w-full' : 'w-[320px]'}`}
+                variants={contentVariants}
+                initial="hidden"
+                animate="visible"
+              >
                 {/* Editor Header */}
                 <div className="h-9 border-b border-gray-200 dark:border-[#333] flex items-center px-4 flex-shrink-0">
                   <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-[#666] flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#ff4444]" />
+                    <span className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${leftAnimating ? 'bg-[#ff4444]' : 'bg-green-500'}`} />
                     Editor
                   </span>
                 </div>
-                <CommentEditor
-                  data={commentData}
-                  onUpdate={updateComment}
-                  onUpdateText={updateCommentText}
-                  onUpdateLikes={updateLikes}
-                  onSetAvatar={setAvatar}
-                />
-              </div>
+                <motion.div variants={contentVariants}>
+                  <CommentEditor
+                    data={commentData}
+                    onUpdate={updateComment}
+                    onUpdateText={updateCommentText}
+                    onUpdateLikes={updateLikes}
+                    onSetAvatar={setAvatar}
+                  />
+                </motion.div>
+              </motion.div>
             </motion.aside>
           )}
         </AnimatePresence>
@@ -227,34 +313,58 @@ function App() {
           onUpdateCanvas={updateCanvas}
         />
 
+        {/* Right Sidebar Backdrop (mobile) */}
+        <AnimatePresence>
+          {rightOpen && isMobile && (
+            <motion.div
+              key="right-backdrop"
+              variants={backdropVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              className="absolute inset-0 z-20 bg-black/40 backdrop-blur-sm"
+              onClick={() => setRightOpen(false)}
+            />
+          )}
+        </AnimatePresence>
+
         {/* Right Sidebar */}
         <AnimatePresence initial={false}>
           {rightOpen && (
             <motion.aside
               key="right-sidebar"
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: isMobile ? '100%' : 280, opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              variants={panelVariants}
+              initial="hiddenRight"
+              animate="visibleRight"
+              exit="hiddenRight"
+              onAnimationStart={() => setRightAnimating(true)}
+              onAnimationComplete={() => setRightAnimating(false)}
               className={`bg-white dark:bg-[#121212] border-l border-gray-200 dark:border-[#333] overflow-hidden flex-shrink-0 ${
-                isMobile ? 'absolute inset-0 z-30' : 'relative'
+                isMobile ? 'absolute inset-y-0 right-0 z-30' : 'relative'
               }`}
             >
-              <div className={`h-full ${isMobile ? 'w-full' : 'w-[280px]'}`}>
+              <motion.div
+                className={`h-full ${isMobile ? 'w-full' : 'w-[280px]'}`}
+                variants={contentVariants}
+                initial="hidden"
+                animate="visible"
+              >
                 {/* Settings Header */}
                 <div className="h-9 border-b border-gray-200 dark:border-[#333] flex items-center px-4 flex-shrink-0">
                   <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-[#666] flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#ff4444]" />
+                    <span className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${rightAnimating ? 'bg-[#ff4444]' : 'bg-green-500'}`} />
                     Configurações
                   </span>
                 </div>
-                <SidebarRight
-                  canvas={canvasSettings}
-                  theme={theme}
-                  onUpdateCanvas={updateCanvas}
-                  onThemeChange={handleThemeChange}
-                />
-              </div>
+                <motion.div variants={contentVariants}>
+                  <SidebarRight
+                    canvas={canvasSettings}
+                    theme={theme}
+                    onUpdateCanvas={updateCanvas}
+                    onThemeChange={handleThemeChange}
+                  />
+                </motion.div>
+              </motion.div>
             </motion.aside>
           )}
         </AnimatePresence>
@@ -290,7 +400,7 @@ function App() {
         transition={{ delay: 1.5 }}
       >
         <span className="text-[10px] text-gray-400 dark:text-[#666] bg-white/80 dark:bg-[#1a1a1a]/80 backdrop-blur-sm px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-[#333] flex items-center gap-1.5">
-          <Github size={10} className="text-[#ff4444]" />
+          <Code2 size={10} className="text-[#ff4444]" />
           Feito com ❤️ por{' '}
           <a
             href="https://github.com/maelldev"
