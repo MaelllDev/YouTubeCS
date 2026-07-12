@@ -103,7 +103,7 @@ A busca tenta em cascata: se um método falha (timeout, CORS), passa automaticam
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/youtube-comment-studio.git
+git clone https://github.com/MaelllDev/YouTubeCS.git
 cd youtube-comment-studio
 
 # Instale as dependências
