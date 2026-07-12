@@ -212,7 +212,7 @@ Todas as requisições têm **timeout de 5 segundos** via `AbortController`.
 
 Feito com ❤️ por **MaellDev**
 
-[![GitHub](https://img.shields.io/badge/GitHub-MaellDev-181717?style=flat-square&logo=github)](https://github.com/maelldev)
+[![GitHub](https://img.shields.io/badge/GitHub-MaellDev-181717?style=flat-square&logo=github)](https://github.com/MaelllDev)
 
 <br />
 

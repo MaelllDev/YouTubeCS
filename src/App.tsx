@@ -403,7 +403,7 @@ function App() {
           <Code2 size={10} className="text-[#ff4444]" />
           Feito com ❤️ por{' '}
           <a
-            href="https://github.com/maelldev"
+            href="https://github.com/MaelllDev"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#ff4444] hover:text-[#cc0000] font-medium transition-colors"
