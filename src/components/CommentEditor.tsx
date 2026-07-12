@@ -54,22 +54,22 @@ function ToggleSwitch({
       onClick={() => onChange(!checked)}
       className={`w-full flex items-center gap-3 p-2.5 rounded-lg transition-all duration-200 text-left ${
         checked
-          ? 'bg-[#e8f0fe] dark:bg-[#263850] text-[#1a73e8] dark:text-[#8ab4f8]'
+          ? 'bg-red-50 dark:bg-red-900/20 text-[#ff4444] dark:text-[#ff4444]'
           : 'hover:bg-gray-100 dark:hover:bg-[#272727] text-gray-700 dark:text-[#aaa]'
       }`}
       whileTap={{ scale: 0.98 }}
     >
       <div className={`p-1.5 rounded-full transition-colors ${
-        checked ? 'bg-[#1a73e8]/10 dark:bg-[#8ab4f8]/10' : 'bg-gray-100 dark:bg-[#333]'
+        checked ? 'bg-[#ff4444]/10 dark:bg-[#ff4444]/10' : 'bg-gray-100 dark:bg-[#333]'
       }`}>
-        <Icon size={16} className={checked ? 'text-[#1a73e8] dark:text-[#8ab4f8]' : 'text-gray-500 dark:text-[#888]'} />
+        <Icon size={16} className={checked ? 'text-[#ff4444] dark:text-[#ff4444]' : 'text-gray-500 dark:text-[#888]'} />
       </div>
       <div className="flex-1 min-w-0">
         <div className="text-sm font-medium">{label}</div>
         {description && <div className="text-xs text-gray-500 dark:text-[#888] mt-0.5">{description}</div>}
       </div>
       <div className={`w-10 h-6 rounded-full transition-all duration-300 flex items-center px-0.5 ${
-        checked ? 'bg-[#1a73e8] dark:bg-[#8ab4f8] justify-end' : 'bg-gray-300 dark:bg-[#555] justify-start'
+        checked ? 'bg-[#ff4444] dark:bg-[#ff4444] justify-end' : 'bg-gray-300 dark:bg-[#555] justify-start'
       }`}>
         <div className="w-5 h-5 rounded-full bg-white shadow-sm" />
       </div>
@@ -103,7 +103,7 @@ function InputField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] placeholder-gray-400 dark:placeholder-[#666] focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8]/20 dark:focus:ring-[#8ab4f8]/20 outline-none transition-all"
+        className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] placeholder-gray-400 dark:placeholder-[#666] focus:border-[#ff4444] dark:focus:border-[#ff4444] focus:ring-1 focus:ring-[#ff4444]/20 outline-none transition-all outline-none transition-all"
       />
     </div>
   )
@@ -205,12 +205,12 @@ export function CommentEditor({ data, onUpdate, onUpdateText, onUpdateLikes, onS
                 onChange={(e) => setSearchInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearchChannel()}
                 placeholder="youtube.com/@canal ou @username"
-                className="flex-1 px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] placeholder-gray-400 dark:placeholder-[#666] focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8]/20 outline-none transition-all"
+                className="flex-1 px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] placeholder-gray-400 dark:placeholder-[#666] focus:border-[#ff4444] dark:focus:border-[#ff4444] focus:ring-1 focus:ring-[#ff4444]/20 outline-none transition-all"
               />
               <motion.button
                 onClick={handleSearchChannel}
                 disabled={searching}
-                className="px-3 py-2 bg-[#1a73e8] dark:bg-[#8ab4f8] text-white dark:text-[#202124] rounded-lg text-sm font-medium hover:bg-[#1557b0] dark:hover:bg-[#aecbfa] transition-colors disabled:opacity-50 flex items-center gap-1"
+                className="px-3 py-2 bg-[#ff4444] dark:bg-[#ff4444] text-white rounded-lg text-sm font-medium hover:bg-[#cc0000] dark:hover:bg-[#cc0000] transition-colors disabled:opacity-50 flex items-center gap-1"
                 whileTap={{ scale: 0.95 }}
               >
                 {searching ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
@@ -292,11 +292,11 @@ export function CommentEditor({ data, onUpdate, onUpdateText, onUpdateLikes, onS
                     onChange={(e) => setAvatarUrlInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAvatarUrlSubmit()}
                     placeholder="https://exemplo.com/avatar.jpg"
-                    className="flex-1 px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] focus:border-[#1a73e8] outline-none transition-all"
+                    className="flex-1 px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] focus:border-[#ff4444] outline-none transition-all"
                   />
                   <motion.button
                     onClick={handleAvatarUrlSubmit}
-                    className="px-2.5 py-1.5 bg-[#1a73e8] dark:bg-[#8ab4f8] text-white dark:text-[#202124] rounded-lg text-xs font-medium"
+                    className="px-2.5 py-1.5 bg-[#ff4444] dark:bg-[#ff4444] text-white rounded-lg text-xs font-medium"
                     whileTap={{ scale: 0.95 }}
                   >
                     <Check size={14} />
@@ -320,7 +320,7 @@ export function CommentEditor({ data, onUpdate, onUpdateText, onUpdateLikes, onS
             onChange={(e) => onUpdateText(e.target.value)}
             placeholder="Digite o comentário..."
             rows={4}
-            className="w-full px-3 py-2.5 text-sm rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] placeholder-gray-400 dark:placeholder-[#666] focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8]/20 outline-none transition-all resize-none font-[Roboto] leading-relaxed"
+            className="w-full px-3 py-2.5 text-sm rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] placeholder-gray-400 dark:placeholder-[#666] focus:border-[#ff4444] dark:focus:border-[#ff4444] focus:ring-1 focus:ring-[#ff4444]/20 outline-none transition-all resize-none font-[Roboto] leading-relaxed"
             style={{ minHeight: '80px' }}
           />
           <div className="text-xs text-gray-400 dark:text-[#666] flex items-center gap-2">
@@ -348,7 +348,24 @@ export function CommentEditor({ data, onUpdate, onUpdateText, onUpdateLikes, onS
               value={data.likes || ''}
               onChange={(e) => handleLikeInput(e.target.value)}
               placeholder="0"
-              className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] focus:border-[#1a73e8] dark:focus:border-[#8ab4f8] focus:ring-1 focus:ring-[#1a73e8]/20 outline-none transition-all"
+              className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] focus:border-[#ff4444] dark:focus:border-[#ff4444] focus:ring-1 focus:ring-[#ff4444]/20 outline-none transition-all"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-gray-500 dark:text-[#888] flex items-center gap-1.5">
+              <ThumbsDown size={12} />
+              Dislikes
+            </label>
+            <input
+              type="text"
+              value={data.dislikes || ''}
+              onChange={(e) => {
+                const cleaned = e.target.value.replace(/[^0-9]/g, '')
+                onUpdate('dislikes', parseInt(cleaned, 10) || 0)
+              }}
+              placeholder="0"
+              className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] focus:border-[#ff4444] dark:focus:border-[#ff4444] focus:ring-1 focus:ring-[#ff4444]/20 outline-none transition-all"
             />
           </div>
 
@@ -365,7 +382,7 @@ export function CommentEditor({ data, onUpdate, onUpdateText, onUpdateLikes, onS
                   onClick={() => handleTimeSelect(time)}
                   className={`px-2.5 py-1.5 text-xs rounded-lg border transition-all ${
                     data.time === time
-                      ? 'bg-[#1a73e8]/10 dark:bg-[#8ab4f8]/10 border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 text-[#1a73e8] dark:text-[#8ab4f8] font-medium'
+                      ? 'bg-red-50 dark:bg-red-900/20 border-[#ff4444]/30 dark:border-[#ff4444]/30 text-[#ff4444] dark:text-[#ff4444] font-medium'
                       : 'border-gray-200 dark:border-[#333] text-gray-600 dark:text-[#aaa] hover:bg-gray-50 dark:hover:bg-[#252525]'
                   }`}
                   whileTap={{ scale: 0.95 }}
@@ -381,7 +398,7 @@ export function CommentEditor({ data, onUpdate, onUpdateText, onUpdateLikes, onS
                   onClick={() => handleTimeSelect(time)}
                   className={`px-2.5 py-1.5 text-xs rounded-lg border transition-all ${
                     data.time === time
-                      ? 'bg-[#1a73e8]/10 dark:bg-[#8ab4f8]/10 border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 text-[#1a73e8] dark:text-[#8ab4f8] font-medium'
+                      ? 'bg-red-50 dark:bg-red-900/20 border-[#ff4444]/30 dark:border-[#ff4444]/30 text-[#ff4444] dark:text-[#ff4444] font-medium'
                       : 'border-gray-200 dark:border-[#333] text-gray-600 dark:text-[#aaa] hover:bg-gray-50 dark:hover:bg-[#252525]'
                   }`}
                   whileTap={{ scale: 0.95 }}
@@ -393,7 +410,7 @@ export function CommentEditor({ data, onUpdate, onUpdateText, onUpdateLikes, onS
                 onClick={() => setShowCustomTime(!showCustomTime)}
                 className={`px-2.5 py-1.5 text-xs rounded-lg border transition-all ${
                   showCustomTime
-                    ? 'bg-[#1a73e8]/10 dark:bg-[#8ab4f8]/10 border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 text-[#1a73e8] dark:text-[#8ab4f8] font-medium'
+                    ? 'bg-red-50 dark:bg-red-900/20 border-[#ff4444]/30 dark:border-[#ff4444]/30 text-[#ff4444] dark:text-[#ff4444] font-medium'
                     : 'border-gray-200 dark:border-[#333] text-gray-600 dark:text-[#aaa] hover:bg-gray-50 dark:hover:bg-[#252525]'
                 }`}
                 whileTap={{ scale: 0.95 }}
@@ -416,7 +433,7 @@ export function CommentEditor({ data, onUpdate, onUpdateText, onUpdateLikes, onS
                       onUpdate('time', e.target.value)
                     }}
                     placeholder="Ex: há 3 meses"
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] focus:border-[#1a73e8] outline-none transition-all"
+                    className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] focus:border-[#ff4444] outline-none transition-all"
                   />
                 </motion.div>
               )}
@@ -436,7 +453,7 @@ export function CommentEditor({ data, onUpdate, onUpdateText, onUpdateLikes, onS
                   onClick={() => onUpdate('replyCount', count)}
                   className={`px-3 py-1.5 text-xs rounded-lg border transition-all ${
                     data.replyCount === count
-                      ? 'bg-[#1a73e8]/10 dark:bg-[#8ab4f8]/10 border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 text-[#1a73e8] dark:text-[#8ab4f8] font-medium'
+                      ? 'bg-red-50 dark:bg-red-900/20 border-[#ff4444]/30 dark:border-[#ff4444]/30 text-[#ff4444] dark:text-[#ff4444] font-medium'
                       : 'border-gray-200 dark:border-[#333] text-gray-600 dark:text-[#aaa] hover:bg-gray-50 dark:hover:bg-[#252525]'
                   }`}
                   whileTap={{ scale: 0.95 }}
@@ -448,7 +465,7 @@ export function CommentEditor({ data, onUpdate, onUpdateText, onUpdateLikes, onS
                 type="number"
                 value={data.replyCount}
                 onChange={(e) => onUpdate('replyCount', parseInt(e.target.value) || 0)}
-                className="w-16 px-2 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] focus:border-[#1a73e8] outline-none transition-all"
+                className="w-16 px-2 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] focus:border-[#ff4444] outline-none transition-all"
                 min={0}
               />
             </div>

@@ -48,7 +48,7 @@ function ColorInput({
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] font-mono focus:border-[#1a73e8] outline-none transition-all"
+          className="flex-1 px-2.5 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] font-mono focus:border-[#ff4444] outline-none transition-all"
         />
       </div>
     </div>
@@ -88,7 +88,7 @@ function RangeSlider({
           min={min}
           max={max}
           step={step}
-          className="flex-1 h-1.5 bg-gray-200 dark:bg-[#444] rounded-full appearance-none cursor-pointer accent-[#1a73e8] dark:accent-[#8ab4f8]"
+          className="flex-1 h-1.5 bg-gray-200 dark:bg-[#444] rounded-full appearance-none cursor-pointer accent-[#ff4444] dark:accent-[#ff4444]"
         />
         <span className="text-xs font-mono text-gray-500 dark:text-[#aaa] min-w-[40px] text-right">
           {value}{suffix}
@@ -124,7 +124,7 @@ function SelectButton({
             onClick={() => onChange(opt.value)}
             className={`px-2.5 py-1.5 text-xs rounded-lg border transition-all ${
               value === opt.value
-                ? 'bg-[#1a73e8]/10 dark:bg-[#8ab4f8]/10 border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 text-[#1a73e8] dark:text-[#8ab4f8] font-medium'
+                ? 'bg-red-50 dark:bg-red-900/20 border-[#ff4444]/30 dark:border-[#ff4444]/30 text-[#ff4444] dark:text-[#ff4444] font-medium'
                 : 'border-gray-200 dark:border-[#333] text-gray-600 dark:text-[#aaa] hover:bg-gray-50 dark:hover:bg-[#252525]'
             }`}
             whileTap={{ scale: 0.95 }}
@@ -158,13 +158,13 @@ export function SidebarRight({ canvas, theme, onUpdateCanvas, onThemeChange }: S
                 onClick={() => onThemeChange(value as ThemeMode)}
                 className={`flex-1 p-2.5 rounded-xl border-2 transition-all flex flex-col items-center gap-1 ${
                   theme === value
-                    ? 'border-[#1a73e8] dark:border-[#8ab4f8] bg-[#e8f0fe] dark:bg-[#263850]'
+                    ? 'border-[#ff4444] dark:border-[#ff4444] bg-red-50 dark:bg-red-900/20'
                     : 'border-gray-200 dark:border-[#333] hover:border-gray-300 dark:hover:border-[#555]'
                 }`}
                 whileTap={{ scale: 0.95 }}
               >
-                <Icon size={16} className={theme === value ? 'text-[#1a73e8] dark:text-[#8ab4f8]' : 'text-gray-500 dark:text-[#888]'} />
-                <span className={`text-xs font-medium ${theme === value ? 'text-[#1a73e8] dark:text-[#8ab4f8]' : 'text-gray-600 dark:text-[#aaa]'}`}>
+                <Icon size={16} className={theme === value ? 'text-[#ff4444] dark:text-[#ff4444]' : 'text-gray-500 dark:text-[#888]'} />
+                <span className={`text-xs font-medium ${theme === value ? 'text-[#ff4444] dark:text-[#ff4444]' : 'text-gray-600 dark:text-[#aaa]'}`}>
                   {label}
                 </span>
               </motion.button>
@@ -244,7 +244,7 @@ export function SidebarRight({ canvas, theme, onUpdateCanvas, onThemeChange }: S
                   onClick={() => onUpdateCanvas('cardShadow', shadow)}
                   className={`px-2.5 py-1.5 text-xs rounded-lg border transition-all ${
                     canvas.cardShadow === shadow
-                      ? 'bg-[#1a73e8]/10 dark:bg-[#8ab4f8]/10 border-[#1a73e8]/30 dark:border-[#8ab4f8]/30 text-[#1a73e8] dark:text-[#8ab4f8] font-medium'
+                      ? 'bg-red-50 dark:bg-red-900/20 border-[#ff4444]/30 dark:border-[#ff4444]/30 text-[#ff4444] dark:text-[#ff4444] font-medium'
                       : 'border-gray-200 dark:border-[#333] text-gray-600 dark:text-[#aaa] hover:bg-gray-50 dark:hover:bg-[#252525]'
                   }`}
                   whileTap={{ scale: 0.95 }}

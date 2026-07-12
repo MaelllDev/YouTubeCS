@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   PanelLeftOpen,
@@ -14,6 +14,7 @@ import {
   Redo2,
   Sparkles,
   Gamepad2,
+  Github,
 } from 'lucide-react'
 import { CommentEditor } from './components/CommentEditor'
 import { CanvasArea } from './components/CanvasArea'
@@ -45,6 +46,21 @@ function App() {
   const [showTemplates, setShowTemplates] = useState(false)
   const [theme, setTheme] = useState<ThemeMode>('light')
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' } | null>(null)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024
+      setIsMobile(mobile)
+      if (mobile) {
+        setLeftOpen(false)
+        setRightOpen(false)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    handleResize()
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const showToast = useCallback((message: string, type: 'success' | 'info' = 'info') => {
     setToast({ message, type })
@@ -72,7 +88,6 @@ function App() {
 
   const handleDuplicate = useCallback(() => {
     const dup = { ...commentData, id: `comment-${Date.now()}-${Math.random().toString(36).slice(2, 7)}` }
-    // Apply the duplicated data
     Object.entries(dup).forEach(([key, value]) => {
       updateComment(key as keyof typeof commentData, value)
     })
@@ -111,22 +126,26 @@ function App() {
     <div className={`h-screen w-screen flex flex-col overflow-hidden ${theme === 'dark' ? 'dark' : ''}`}>
       {/* Top Bar */}
       <motion.header
-        className="h-12 bg-white dark:bg-[#0f0f0f] border-b border-gray-200 dark:border-[#333] flex items-center justify-between px-3 flex-shrink-0 z-20"
+        className="h-12 bg-white dark:bg-[#0f0f0f] border-b border-gray-200 dark:border-[#333] flex items-center justify-between px-2 sm:px-3 flex-shrink-0 z-20"
         initial={{ y: -20 }}
         animate={{ y: 0 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <motion.button
-            onClick={() => setLeftOpen(!leftOpen)}
+            onClick={() => {
+              setLeftOpen(!leftOpen)
+              if (isMobile && !leftOpen) setRightOpen(false)
+            }}
             className="p-1.5 hover:bg-gray-100 dark:hover:bg-[#272727] rounded-lg transition-colors text-gray-500 dark:text-[#888]"
             whileTap={{ scale: 0.9 }}
+            title={leftOpen ? 'Fechar editor' : 'Abrir editor'}
           >
             {leftOpen ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
           </motion.button>
 
           <div className="flex items-center gap-2 ml-1">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#ff4444] to-[#cc0000] flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#ff4444] to-[#cc0000] flex items-center justify-center shadow-sm">
               <Gamepad2 size={16} className="text-white" />
             </div>
             <span className="text-sm font-semibold text-gray-800 dark:text-[#f1f1f1] hidden sm:block">
@@ -135,14 +154,17 @@ function App() {
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 sm:gap-1">
+          <span className="hidden md:flex items-center gap-1.5 text-[10px] text-gray-400 dark:text-[#666] mr-1 bg-gray-50 dark:bg-[#1a1a1a] px-2 py-1 rounded-md border border-gray-200 dark:border-[#333]">
+            <Sparkles size={10} className="text-[#ff4444]" />
+            by MaellDev
+          </span>
           <ToolbarButton icon={Layout} label="Templates" onClick={() => setShowTemplates(true)} />
           <ToolbarButton icon={Undo2} label="Desfazer" onClick={undo} disabled={!canUndo} />
           <ToolbarButton icon={Redo2} label="Refazer" onClick={redo} disabled={!canRedo} />
           <ToolbarButton icon={Copy} label="Copiar Config" onClick={handleCopyConfig} />
           <ToolbarButton icon={CopyPlus} label="Duplicar" onClick={handleDuplicate} />
           <ToolbarButton icon={Download} label="Exportar" onClick={() => {
-            // Trigger export via canvas area
             window.dispatchEvent(new CustomEvent('ycs-export'))
           }} />
           <ToolbarButton icon={RotateCcw} label="Resetar" onClick={resetAll} />
@@ -150,9 +172,13 @@ function App() {
 
         <div className="flex items-center gap-2">
           <motion.button
-            onClick={() => setRightOpen(!rightOpen)}
+            onClick={() => {
+              setRightOpen(!rightOpen)
+              if (isMobile && !rightOpen) setLeftOpen(false)
+            }}
             className="p-1.5 hover:bg-gray-100 dark:hover:bg-[#272727] rounded-lg transition-colors text-gray-500 dark:text-[#888]"
             whileTap={{ scale: 0.9 }}
+            title={rightOpen ? 'Fechar configurações' : 'Abrir configurações'}
           >
             {rightOpen ? <PanelRightClose size={18} /> : <PanelRightOpen size={18} />}
           </motion.button>
@@ -160,22 +186,25 @@ function App() {
       </motion.header>
 
       {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative">
         {/* Left Sidebar */}
         <AnimatePresence initial={false}>
           {leftOpen && (
             <motion.aside
               key="left-sidebar"
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 320, opacity: 1 }}
+              animate={{ width: isMobile ? '100%' : 320, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2, ease: 'easeInOut' }}
-              className="bg-white dark:bg-[#121212] border-r border-gray-200 dark:border-[#333] overflow-hidden flex-shrink-0"
+              className={`bg-white dark:bg-[#121212] border-r border-gray-200 dark:border-[#333] overflow-hidden flex-shrink-0 ${
+                isMobile ? 'absolute inset-0 z-30' : 'relative'
+              }`}
             >
-              <div className="w-[320px] h-full">
+              <div className={`h-full ${isMobile ? 'w-full' : 'w-[320px]'}`}>
                 {/* Editor Header */}
                 <div className="h-9 border-b border-gray-200 dark:border-[#333] flex items-center px-4 flex-shrink-0">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-[#666]">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-[#666] flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#ff4444]" />
                     Editor
                   </span>
                 </div>
@@ -204,15 +233,18 @@ function App() {
             <motion.aside
               key="right-sidebar"
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 280, opacity: 1 }}
+              animate={{ width: isMobile ? '100%' : 280, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2, ease: 'easeInOut' }}
-              className="bg-white dark:bg-[#121212] border-l border-gray-200 dark:border-[#333] overflow-hidden flex-shrink-0"
+              className={`bg-white dark:bg-[#121212] border-l border-gray-200 dark:border-[#333] overflow-hidden flex-shrink-0 ${
+                isMobile ? 'absolute inset-0 z-30' : 'relative'
+              }`}
             >
-              <div className="w-[280px] h-full">
+              <div className={`h-full ${isMobile ? 'w-full' : 'w-[280px]'}`}>
                 {/* Settings Header */}
                 <div className="h-9 border-b border-gray-200 dark:border-[#333] flex items-center px-4 flex-shrink-0">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-[#666]">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-[#666] flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#ff4444]" />
                     Configurações
                   </span>
                 </div>
@@ -250,15 +282,36 @@ function App() {
         )}
       </AnimatePresence>
 
+      {/* Footer Credits */}
+      <motion.div
+        className="fixed bottom-3 right-3 z-40 flex items-center gap-1.5"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5 }}
+      >
+        <span className="text-[10px] text-gray-400 dark:text-[#666] bg-white/80 dark:bg-[#1a1a1a]/80 backdrop-blur-sm px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-[#333] flex items-center gap-1.5">
+          <Github size={10} className="text-[#ff4444]" />
+          Feito com ❤️ por{' '}
+          <a
+            href="https://github.com/maelldev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#ff4444] hover:text-[#cc0000] font-medium transition-colors"
+          >
+            MaellDev
+          </a>
+        </span>
+      </motion.div>
+
       {/* Keyboard Shortcuts Hint */}
       <motion.div
-        className="fixed bottom-6 right-6 z-40 hidden lg:block"
+        className="fixed bottom-3 left-3 z-40 hidden lg:block"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
       >
         <div className="text-[10px] text-gray-400 dark:text-[#666] bg-white/80 dark:bg-[#1a1a1a]/80 backdrop-blur-sm px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-[#333]">
-          Ctrl+Z Desfazer · Ctrl+Shift+Z Refazer · Espaço + Arraste para navegar · Ctrl+Roda zoom
+          Ctrl+Z Desfazer · Ctrl+Shift+Z Refazer · Espaço + Arraste · Ctrl+Roda zoom
         </div>
       </motion.div>
     </div>
@@ -284,8 +337,8 @@ function ToolbarButton({
       disabled={disabled}
       className={`p-1.5 rounded-lg transition-colors text-xs ${
         active
-          ? 'bg-[#1a73e8]/10 dark:bg-[#8ab4f8]/10 text-[#1a73e8] dark:text-[#8ab4f8]'
-          : 'text-gray-500 dark:text-[#888] hover:bg-gray-100 dark:hover:bg-[#272727]'
+          ? 'bg-red-50 dark:bg-red-900/20 text-[#ff4444] dark:text-[#ff4444]'
+          : 'text-gray-500 dark:text-[#888] hover:bg-gray-100 dark:hover:bg-[#272727] hover:text-[#ff4444] dark:hover:text-[#ff4444]'
       } ${disabled ? 'opacity-30 cursor-not-allowed' : ''}`}
       whileTap={disabled ? {} : { scale: 0.9 }}
       title={label}

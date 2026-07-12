@@ -16,6 +16,7 @@ export interface CommentData {
   memberBadge?: string
   text: string
   likes: number
+  dislikes: number
   time: string
   isPinned: boolean
   heartedByCreator: boolean
@@ -121,6 +122,7 @@ export const DEFAULT_COMMENT_DATA: CommentData = {
   isMember: false,
   text: 'Digite seu comentário aqui...',
   likes: 0,
+  dislikes: 0,
   time: 'há 1 minuto',
   isPinned: false,
   heartedByCreator: false,

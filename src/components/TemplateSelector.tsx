@@ -71,12 +71,12 @@ export function TemplateSelector({ isOpen, onClose, onSelect }: TemplateSelector
                       onSelect(template)
                       onClose()
                     }}
-                    className="p-4 rounded-xl border-2 border-gray-200 dark:border-[#333] hover:border-[#1a73e8] dark:hover:border-[#8ab4f8] hover:bg-gray-50 dark:hover:bg-[#1a1a1a] transition-all text-left group"
+                    className="p-4 rounded-xl border-2 border-gray-200 dark:border-[#333] hover:border-[#ff4444] dark:hover:border-[#ff4444] hover:bg-red-50 dark:hover:bg-[#1a1a1a] transition-all text-left group"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <div className="p-2.5 rounded-full bg-gray-100 dark:bg-[#333] group-hover:bg-[#e8f0fe] dark:group-hover:bg-[#263850] transition-colors w-fit mb-3">
-                      <Icon size={18} className="text-gray-600 dark:text-[#aaa] group-hover:text-[#1a73e8] dark:group-hover:text-[#8ab4f8] transition-colors" />
+                    <div className="p-2.5 rounded-full bg-gray-100 dark:bg-[#333] group-hover:bg-red-50 dark:group-hover:bg-red-900/20 transition-colors w-fit mb-3">
+                      <Icon size={18} className="text-gray-600 dark:text-[#aaa] group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors" />
                     </div>
                     <h3 className="text-sm font-medium text-gray-800 dark:text-[#ddd] mb-0.5">{template.name}</h3>
                     <p className="text-xs text-gray-400 dark:text-[#888]">{template.description}</p>

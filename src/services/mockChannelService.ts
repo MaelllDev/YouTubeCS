@@ -5,35 +5,35 @@ const mockChannels: Record<string, ChannelInfo> = {
     id: 'UCvH1e0z8sGQ',
     name: 'Lofi Girl',
     handle: '@lofi',
-    avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=lofi&backgroundColor=b6e3f4',
+    avatarUrl: 'https://ui-avatars.com/api/?name=Lofi+Girl&background=ff4444&color=fff&bold=true&size=80',
     verified: true,
   },
   '@tech': {
     id: 'UC_TECH',
     name: 'Tech Review',
     handle: '@tech',
-    avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=tech&backgroundColor=c0aede',
+    avatarUrl: 'https://ui-avatars.com/api/?name=Tech+Review&background=cc0000&color=fff&bold=true&size=80',
     verified: true,
   },
   '@gamer': {
     id: 'UC_GAMER',
     name: 'GamePlay BR',
     handle: '@gamer',
-    avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=gamer&backgroundColor=ffdfbf',
+    avatarUrl: 'https://ui-avatars.com/api/?name=GamePlay+BR&background=333333&color=ff4444&bold=true&size=80',
     verified: false,
   },
   '@music': {
     id: 'UC_MUSIC',
     name: 'Música & Som',
     handle: '@music',
-    avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=music&backgroundColor=d1d4f9',
+    avatarUrl: 'https://ui-avatars.com/api/?name=Musica+e+Som&background=ff4444&color=fff&bold=true&size=80',
     verified: true,
   },
   '@dev': {
     id: 'UC_DEV',
     name: 'Coding Tips',
     handle: '@dev',
-    avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=dev&backgroundColor=ffd5dc',
+    avatarUrl: 'https://ui-avatars.com/api/?name=Coding+Tips&background=1a1a1a&color=ff4444&bold=true&size=80',
     verified: false,
   },
 }
@@ -72,11 +72,12 @@ export function searchChannel(input: string): Promise<ChannelInfo | null> {
       }
 
       // Generate a random channel from the input
+      const name = parsed.handle.replace('@', '').replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
       resolve({
         id: `UC_${Math.random().toString(36).slice(2, 10)}`,
-        name: parsed.handle.replace('@', '').replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+        name,
         handle: parsed.handle.startsWith('@') ? parsed.handle : `@${parsed.handle}`,
-        avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${parsed.handle}&backgroundColor=ffdfbf,c0aede,b6e3f4,d1d4f9`,
+        avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=ff4444&color=fff&bold=true&size=80`,
         verified: Math.random() > 0.5,
       })
     }, 600)

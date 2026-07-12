@@ -178,7 +178,7 @@ export function CanvasArea({ comment, canvas, onUpdateCanvas }: CanvasAreaProps)
               onClick={() => setCurrentZoomIndex(i)}
               className={`px-1.5 py-1 text-xs rounded-md font-medium transition-all ${
                 i === currentZoomIndex
-                  ? 'bg-[#1a73e8] text-white dark:bg-[#8ab4f8] dark:text-[#202124]'
+                  ? 'bg-[#ff4444] text-white dark:bg-[#ff4444] dark:text-white'
                   : 'text-gray-500 dark:text-[#888] hover:bg-gray-100 dark:hover:bg-[#333]'
               }`}
               whileTap={{ scale: 0.9 }}
@@ -203,8 +203,8 @@ export function CanvasArea({ comment, canvas, onUpdateCanvas }: CanvasAreaProps)
           onClick={toggleGrid}
           className={`p-1.5 rounded-lg transition-colors ${
             canvas.showGrid
-              ? 'bg-[#1a73e8]/10 text-[#1a73e8] dark:text-[#8ab4f8]'
-              : 'hover:bg-gray-100 dark:hover:bg-[#333] text-gray-600 dark:text-[#aaa]'
+              ? 'bg-red-50 text-[#ff4444] dark:text-[#ff4444]'
+              : 'hover:bg-gray-100 dark:hover:bg-[#333] text-gray-600 dark:text-[#aaa] hover:text-[#ff4444]'
           }`}
           whileTap={{ scale: 0.9 }}
           title="Toggle Grid"

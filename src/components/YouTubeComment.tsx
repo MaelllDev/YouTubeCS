@@ -10,15 +10,23 @@ interface YouTubeCommentProps {
 }
 
 function Avatar({ src, name }: { src: string; name: string }) {
+  const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'U')}&background=ff4444&color=fff&bold=true&size=80`
+
   return (
     <div className="w-[40px] h-[40px] rounded-full overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-[#333]">
-      {src ? (
-        <img src={src} alt={name} className="w-full h-full object-cover" loading="lazy" />
-      ) : (
-        <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-[#666] text-sm font-medium">
-          {name.charAt(0).toUpperCase()}
-        </div>
-      )}
+      <img
+        src={src || fallbackUrl}
+        alt={name}
+        className="w-full h-full object-cover"
+        loading="lazy"
+        onError={(e) => {
+          const target = e.currentTarget
+          if (!target.dataset.fallbackAttempted) {
+            target.dataset.fallbackAttempted = 'true'
+            target.src = fallbackUrl
+          }
+        }}
+      />
     </div>
   )
 }
@@ -57,7 +65,10 @@ function CommentText({ text }: { text: string }) {
 }
 
 export function YouTubeComment({ comment, canvas }: YouTubeCommentProps) {
-  const isDark = canvas.cardBackgroundColor === '#0f0f0f' || canvas.cardBackgroundColor === '#1a1a1a' || canvas.cardBackgroundColor === '#212121'
+  const isDark =
+    canvas.cardBackgroundColor === '#0f0f0f' ||
+    canvas.cardBackgroundColor === '#1a1a1a' ||
+    canvas.cardBackgroundColor === '#212121'
 
   return (
     <motion.div
@@ -79,7 +90,7 @@ export function YouTubeComment({ comment, canvas }: YouTubeCommentProps) {
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
       {/* Comment Card */}
-      <div className="flex gap-3">
+      <div className="flex gap-[10px]">
         {/* Avatar */}
         <Avatar src={comment.authorAvatar} name={comment.authorName} />
 
@@ -143,10 +154,10 @@ export function YouTubeComment({ comment, canvas }: YouTubeCommentProps) {
             {/* Like Button */}
             {comment.showLikeButton && (
               <div className="flex items-center">
-                <div className="flex items-center gap-0.5 px-2 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer transition-colors">
-                  <ThumbsUp size={16} className="text-[#606060] dark:text-[#aaa]" />
+                <div className="flex items-center gap-0.5 px-2 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer transition-colors group">
+                  <ThumbsUp size={16} className="text-[#606060] dark:text-[#aaa] group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors" />
                   {comment.likes > 0 && (
-                    <span className="text-[12px] text-[#606060] dark:text-[#aaa] font-medium ml-1">
+                    <span className="text-[12px] text-[#606060] dark:text-[#aaa] font-medium ml-1 group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors">
                       {formatLikes(comment.likes)}
                     </span>
                   )}
@@ -155,8 +166,13 @@ export function YouTubeComment({ comment, canvas }: YouTubeCommentProps) {
                 {comment.showDislikeButton && (
                   <>
                     <div className="w-px h-6 bg-gray-300 dark:bg-[#555] mx-1" />
-                    <div className="flex items-center px-2 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer transition-colors">
-                      <ThumbsDown size={16} className="text-[#606060] dark:text-[#aaa]" />
+                    <div className="flex items-center gap-0.5 px-2 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer transition-colors group">
+                      <ThumbsDown size={16} className="text-[#606060] dark:text-[#aaa] group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors" />
+                      {comment.dislikes > 0 && (
+                        <span className="text-[12px] text-[#606060] dark:text-[#aaa] font-medium ml-1 group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors">
+                          {formatLikes(comment.dislikes)}
+                        </span>
+                      )}
                     </div>
                   </>
                 )}
@@ -165,9 +181,9 @@ export function YouTubeComment({ comment, canvas }: YouTubeCommentProps) {
 
             {/* Reply Button */}
             {comment.showReplyButton && (
-              <div className="flex items-center px-3 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer transition-colors">
-                <MessageCircle size={16} className="text-[#606060] dark:text-[#aaa]" />
-                <span className="text-[12px] text-[#606060] dark:text-[#aaa] font-medium ml-1.5">
+              <div className="flex items-center px-3 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer transition-colors group">
+                <MessageCircle size={16} className="text-[#606060] dark:text-[#aaa] group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors" />
+                <span className="text-[12px] text-[#606060] dark:text-[#aaa] font-medium ml-1.5 group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors">
                   Responder
                 </span>
               </div>
@@ -175,8 +191,8 @@ export function YouTubeComment({ comment, canvas }: YouTubeCommentProps) {
 
             {/* Translate Button */}
             {comment.showTranslateButton && (
-              <div className="flex items-center px-2 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer transition-colors">
-                <Languages size={16} className="text-[#606060] dark:text-[#aaa]" />
+              <div className="flex items-center px-2 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer transition-colors group">
+                <Languages size={16} className="text-[#606060] dark:text-[#aaa] group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors" />
               </div>
             )}
 
@@ -185,7 +201,7 @@ export function YouTubeComment({ comment, canvas }: YouTubeCommentProps) {
               <div className="flex items-center ml-auto">
                 <Heart
                   size={16}
-                  className="text-[#606060] dark:text-[#aaa]"
+                  className="text-[#ff0000] drop-shadow-sm"
                   fill="#ff0000"
                   stroke="#ff0000"
                 />
@@ -193,12 +209,12 @@ export function YouTubeComment({ comment, canvas }: YouTubeCommentProps) {
             )}
           </div>
 
-          {/* View Replies */}
+          {/* View Replies - Modern YouTube Style */}
           {comment.showViewRepliesButton && comment.replyCount > 0 && (
-            <div className="flex items-center gap-1.5 mt-1.5 cursor-pointer group">
-              <div className="w-[2px] h-4 bg-[#065fd4] dark:bg-[#3ea6ff] rounded-full" />
-              <span className="text-[14px] text-[#065fd4] dark:text-[#3ea6ff] font-medium group-hover:underline">
-                {formatReplyCount(comment.replyCount) || `Ver ${comment.replyCount} respostas`}
+            <div className="flex items-center gap-[10px] mt-[6px] cursor-pointer group">
+              <div className="w-[2px] h-5 bg-[#ff4444] dark:bg-[#ff4444] rounded-full flex-shrink-0" />
+              <span className="text-[14px] text-[#ff4444] dark:text-[#ff4444] font-medium group-hover:underline leading-5">
+                {formatReplyCount(comment.replyCount) || `Ver ${comment.replyCount} ${comment.replyCount === 1 ? 'resposta' : 'respostas'}`}
               </span>
             </div>
           )}

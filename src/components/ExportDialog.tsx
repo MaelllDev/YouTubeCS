@@ -116,13 +116,13 @@ export function ExportDialog({ commentRef, onClose }: ExportDialogProps) {
                   onClick={() => setFormat(f)}
                   className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1.5 ${
                     format === f
-                      ? 'border-[#1a73e8] dark:border-[#8ab4f8] bg-[#e8f0fe] dark:bg-[#263850]'
+                      ? 'border-[#ff4444] dark:border-[#ff4444] bg-red-50 dark:bg-red-900/20'
                       : 'border-gray-200 dark:border-[#333] hover:border-gray-300 dark:hover:border-[#555]'
                   }`}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Icon size={20} className={format === f ? 'text-[#1a73e8] dark:text-[#8ab4f8]' : 'text-gray-500 dark:text-[#888]'} />
-                  <span className={`text-sm font-medium ${format === f ? 'text-[#1a73e8] dark:text-[#8ab4f8]' : 'text-gray-700 dark:text-[#ccc]'}`}>
+                  <Icon size={20} className={format === f ? 'text-[#ff4444] dark:text-[#ff4444]' : 'text-gray-500 dark:text-[#888]'} />
+                  <span className={`text-sm font-medium ${format === f ? 'text-[#ff4444] dark:text-[#ff4444]' : 'text-gray-700 dark:text-[#ccc]'}`}>
                     {label}
                   </span>
                 </motion.button>
@@ -140,15 +140,15 @@ export function ExportDialog({ commentRef, onClose }: ExportDialogProps) {
                   onClick={() => setScale(s)}
                   className={`flex-1 p-2.5 rounded-xl border-2 transition-all text-center ${
                     scale === s
-                      ? 'border-[#1a73e8] dark:border-[#8ab4f8] bg-[#e8f0fe] dark:bg-[#263850]'
+                      ? 'border-[#ff4444] dark:border-[#ff4444] bg-red-50 dark:bg-red-900/20'
                       : 'border-gray-200 dark:border-[#333] hover:border-gray-300 dark:hover:border-[#555]'
                   }`}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <div className={`text-sm font-medium ${scale === s ? 'text-[#1a73e8] dark:text-[#8ab4f8]' : 'text-gray-700 dark:text-[#ccc]'}`}>
+                  <div className={`text-sm font-medium ${scale === s ? 'text-[#ff4444] dark:text-[#ff4444]' : 'text-gray-700 dark:text-[#ccc]'}`}>
                     {s}x
                   </div>
-                  <div className={`text-[11px] ${scale === s ? 'text-[#1a73e8]/70 dark:text-[#8ab4f8]/70' : 'text-gray-400 dark:text-[#777]'}`}>
+                  <div className={`text-[11px] ${scale === s ? 'text-[#ff4444]/70 dark:text-[#ff4444]/70' : 'text-gray-400 dark:text-[#777]'}`}>
                     {s === 1 ? 'HD' : s === 2 ? '2K' : s === 4 ? '4K' : '8K'}
                   </div>
                 </motion.button>
@@ -166,7 +166,7 @@ export function ExportDialog({ commentRef, onClose }: ExportDialogProps) {
               onClick={() => setTransparent(!transparent)}
               className={`w-12 h-7 rounded-full transition-all duration-300 flex items-center px-0.5 ${
                 transparent
-                  ? 'bg-[#1a73e8] dark:bg-[#8ab4f8] justify-end'
+                  ? 'bg-[#ff4444] dark:bg-[#ff4444] justify-end'
                   : 'bg-gray-300 dark:bg-[#555] justify-start'
               } ${format === 'jpg' ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}`}
               whileTap={{ scale: 0.95 }}
@@ -187,7 +187,7 @@ export function ExportDialog({ commentRef, onClose }: ExportDialogProps) {
               <motion.button
                 onClick={handleExport}
                 disabled={exporting}
-                className="flex-1 py-2.5 bg-[#1a73e8] dark:bg-[#8ab4f8] text-white dark:text-[#202124] rounded-xl text-sm font-medium hover:bg-[#1557b0] dark:hover:bg-[#aecbfa] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 bg-[#ff4444] dark:bg-[#ff4444] text-white rounded-xl text-sm font-medium hover:bg-[#cc0000] dark:hover:bg-[#cc0000] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 whileTap={{ scale: 0.95 }}
               >
                 {exporting ? (
