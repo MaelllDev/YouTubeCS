@@ -23,8 +23,9 @@ import {
   AlertCircle,
   Hash,
   Check,
+  Key,
 } from 'lucide-react'
-import { searchChannel } from '../services/mockChannelService'
+import { searchChannel, getYouTubeApiKey, setYouTubeApiKey } from '../services/mockChannelService'
 import type { CommentData, ChannelInfo } from '../types'
 import { TIME_OPTIONS, REPLY_COUNT_OPTIONS } from '../types'
 
@@ -117,6 +118,13 @@ export function CommentEditor({ data, onUpdate, onUpdateText, onUpdateLikes, onS
   const [customTime, setCustomTime] = useState('')
   const [showAvatarUrlInput, setShowAvatarUrlInput] = useState(false)
   const [avatarUrlInput, setAvatarUrlInput] = useState('')
+  const [apiKey, setApiKeyState] = useState(getYouTubeApiKey)
+  const [showApiKeyInput, setShowApiKeyInput] = useState(false)
+
+  const handleApiKeyChange = (key: string) => {
+    setApiKeyState(key)
+    setYouTubeApiKey(key)
+  }
 
   const handleSearchChannel = async () => {
     if (!searchInput.trim()) return
@@ -124,9 +132,16 @@ export function CommentEditor({ data, onUpdate, onUpdateText, onUpdateLikes, onS
     setSearchError(null)
 
     try {
-      const channel = await searchChannel(searchInput)
+      const { channel, fromApi, error: apiError } = await searchChannel(searchInput, apiKey || undefined)
       if (channel) {
         applyChannel(channel)
+        setSearchError(null)
+      } else if (fromApi && apiError) {
+        // API returned an error (invalid key, quota, etc.)
+        setSearchError(apiError)
+      } else if (fromApi) {
+        // API returned but channel not found
+        setSearchError('Canal não encontrado no YouTube. Verifique o link ou nome.')
       } else {
         setSearchError('Canal não encontrado. Verifique o link ou nome.')
       }
@@ -215,6 +230,19 @@ export function CommentEditor({ data, onUpdate, onUpdateText, onUpdateLikes, onS
               >
                 {searching ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
               </motion.button>
+              {/* API Key toggle */}
+              <motion.button
+                onClick={() => setShowApiKeyInput(!showApiKeyInput)}
+                className={`px-2.5 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 ${
+                  apiKey
+                    ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800'
+                    : 'bg-gray-100 dark:bg-[#333] text-gray-500 dark:text-[#888] border border-transparent hover:border-gray-300 dark:hover:border-[#555]'
+                }`}
+                whileTap={{ scale: 0.95 }}
+                title={apiKey ? 'API Key configurada' : 'Configurar YouTube API Key'}
+              >
+                <Key size={14} />
+              </motion.button>
             </div>
             <AnimatePresence>
               {searchError && (
@@ -229,6 +257,54 @@ export function CommentEditor({ data, onUpdate, onUpdateText, onUpdateLikes, onS
                 </motion.div>
               )}
             </AnimatePresence>
+            <AnimatePresence>
+              {showApiKeyInput && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-2"
+                >
+                  <div className="flex gap-2">
+                    <input
+                      type="password"
+                      value={apiKey}
+                      onChange={(e) => handleApiKeyChange(e.target.value)}
+                      placeholder="Cole sua YouTube Data API Key aqui"
+                      className="flex-1 px-3 py-2 text-xs rounded-lg border border-gray-200 dark:border-[#333] bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-[#eee] placeholder-gray-400 dark:placeholder-[#666] focus:border-[#ff4444] outline-none transition-all font-mono"
+                    />
+                    <motion.button
+                      onClick={() => setShowApiKeyInput(false)}
+                      className="px-2.5 py-2 text-xs rounded-lg bg-gray-100 dark:bg-[#333] text-gray-600 dark:text-[#aaa] hover:bg-gray-200 dark:hover:bg-[#444] transition-colors"
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Check size={14} />
+                    </motion.button>
+                  </div>
+                  <div className="text-[10px] text-gray-400 dark:text-[#666] leading-relaxed">
+                    Insira sua chave da{' '}
+                    <a
+                      href="https://console.cloud.google.com/apis/credentials"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#ff4444] hover:underline"
+                    >
+                      YouTube Data API v3
+                    </a>
+                    {' '}para buscar fotos reais dos canais. A chave fica salva no seu navegador. É gratuita!<br />
+                    <span className="text-green-500 dark:text-green-400">
+                      {apiKey ? '✅ API Key configurada' : '💡 Clique no cadeado 🔑 para configurar'}
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            {apiKey && !showApiKeyInput && (
+              <div className="flex items-center gap-1.5 text-[10px] text-green-500 dark:text-green-400">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                Buscando dados reais do YouTube
+              </div>
+            )}
           </div>
         </div>
 

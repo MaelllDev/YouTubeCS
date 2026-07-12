@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Heart, ThumbsUp, ThumbsDown, MessageCircle, Languages, Pin, Award } from 'lucide-react'
 import type { CommentData, CanvasSettings } from '../types'
@@ -18,6 +18,11 @@ function Avatar({ src, name }: { src: string; name: string }) {
     .join('')
     .toUpperCase()
   const [imgError, setImgError] = useState(false)
+
+  // Reseta o erro quando a URL da imagem muda
+  useEffect(() => {
+    setImgError(false)
+  }, [src])
 
   if (!src || imgError) {
     return (
@@ -162,14 +167,14 @@ export function YouTubeComment({ comment, canvas }: YouTubeCommentProps) {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-1 mt-1">
+          <div className="flex items-center mt-1">
             {/* Like Button */}
             {comment.showLikeButton && (
               <div className="flex items-center">
-                <div className="flex items-center gap-0.5 px-2 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer transition-colors group">
-                  <ThumbsUp size={16} className="text-[#606060] dark:text-[#aaa] group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors" />
+                <div className="flex items-center px-2 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer transition-colors group">
+                  <ThumbsUp size={16} className="text-[#606060] dark:text-[#aaa] group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors flex-shrink-0" />
                   {comment.likes > 0 && (
-                    <span className="text-[12px] text-[#606060] dark:text-[#aaa] font-medium ml-1 group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors">
+                    <span className="text-[12px] text-[#606060] dark:text-[#aaa] font-medium group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors whitespace-nowrap flex-shrink-0" style={{ marginLeft: 5, lineHeight: '16px' }}>
                       {formatLikes(comment.likes)}
                     </span>
                   )}
@@ -177,11 +182,11 @@ export function YouTubeComment({ comment, canvas }: YouTubeCommentProps) {
                 {/* Dislike Button */}
                 {comment.showDislikeButton && (
                   <>
-                    <div className="w-px h-6 bg-gray-300 dark:bg-[#555] mx-1" />
-                    <div className="flex items-center gap-0.5 px-2 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer transition-colors group">
-                      <ThumbsDown size={16} className="text-[#606060] dark:text-[#aaa] group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors" />
+                    <div className="w-px h-6 bg-gray-300 dark:bg-[#555] flex-shrink-0" style={{ margin: '0 5px' }} />
+                    <div className="flex items-center px-2 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer transition-colors group">
+                      <ThumbsDown size={16} className="text-[#606060] dark:text-[#aaa] group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors flex-shrink-0" />
                       {comment.dislikes > 0 && (
-                        <span className="text-[12px] text-[#606060] dark:text-[#aaa] font-medium ml-1 group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors">
+                        <span className="text-[12px] text-[#606060] dark:text-[#aaa] font-medium group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors whitespace-nowrap flex-shrink-0" style={{ marginLeft: 5, lineHeight: '16px' }}>
                           {formatLikes(comment.dislikes)}
                         </span>
                       )}
@@ -193,9 +198,9 @@ export function YouTubeComment({ comment, canvas }: YouTubeCommentProps) {
 
             {/* Reply Button */}
             {comment.showReplyButton && (
-              <div className="flex items-center px-3 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer transition-colors group">
-                <MessageCircle size={16} className="text-[#606060] dark:text-[#aaa] group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors" />
-                <span className="text-[12px] text-[#606060] dark:text-[#aaa] font-medium ml-1.5 group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors">
+              <div className="flex items-center px-3 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer transition-colors group" style={{ marginLeft: 4 }}>
+                <MessageCircle size={16} className="text-[#606060] dark:text-[#aaa] group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors flex-shrink-0" />
+                <span className="text-[12px] text-[#606060] dark:text-[#aaa] font-medium group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors whitespace-nowrap flex-shrink-0" style={{ marginLeft: 6, lineHeight: '16px' }}>
                   Responder
                 </span>
               </div>
@@ -203,17 +208,17 @@ export function YouTubeComment({ comment, canvas }: YouTubeCommentProps) {
 
             {/* Translate Button */}
             {comment.showTranslateButton && (
-              <div className="flex items-center px-2 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer transition-colors group">
-                <Languages size={16} className="text-[#606060] dark:text-[#aaa] group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors" />
+              <div className="flex items-center px-2 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer transition-colors group" style={{ marginLeft: 4 }}>
+                <Languages size={16} className="text-[#606060] dark:text-[#aaa] group-hover:text-[#ff4444] dark:group-hover:text-[#ff4444] transition-colors flex-shrink-0" />
               </div>
             )}
 
             {/* Heart from Creator */}
             {comment.heartedByCreator && (
-              <div className="flex items-center ml-auto">
+              <div className="flex items-center" style={{ marginLeft: 'auto' }}>
                 <Heart
                   size={16}
-                  className="text-[#ff0000] drop-shadow-sm"
+                  className="text-[#ff0000] drop-shadow-sm flex-shrink-0"
                   fill="#ff0000"
                   stroke="#ff0000"
                 />

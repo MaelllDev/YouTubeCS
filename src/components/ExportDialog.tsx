@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { X, Download, Image, FileType, ZoomIn, ZoomOut, Check } from 'lucide-react'
-import html2canvas from 'html2canvas'
+import { X, Download, Image, FileType, Check } from 'lucide-react'
+import domtoimage from 'dom-to-image-more'
 import type { ExportFormat, ExportScale } from '../types'
 import { downloadBlob } from '../utils'
 
@@ -35,28 +35,84 @@ export function ExportDialog({ commentRef, onClose }: ExportDialogProps) {
 
     try {
       const element = commentRef.current
-      const canvas = await html2canvas(element, {
-        scale: scale,
-        backgroundColor: transparent ? null : '#ffffff',
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
+
+      // Pré-carrega imagens externas como data URLs para evitar CORS
+      const images = element.querySelectorAll('img[src]')
+      const imagePromises = Array.from(images).map(async (img) => {
+        const src = img.getAttribute('src')
+        if (!src || src.startsWith('data:')) return
+
+        try {
+          const response = await fetch(src, { mode: 'cors' })
+          const blob = await response.blob()
+          const reader = new FileReader()
+          return new Promise<void>((resolve) => {
+            reader.onload = () => {
+              img.setAttribute('src', reader.result as string)
+              resolve()
+            }
+            reader.readAsDataURL(blob)
+          })
+        } catch {
+          // CORS bloqueado — mantém URL original
+        }
       })
 
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          setExporting(false)
-          return
+      await Promise.all(imagePromises)
+
+      // Aguarda as imagens carregarem
+      await Promise.all(Array.from(images).map((img) => {
+        if (img.complete) return Promise.resolve()
+        return new Promise((resolve) => {
+          img.addEventListener('load', resolve, { once: true })
+          img.addEventListener('error', resolve, { once: true })
+        })
+      }))
+
+      // Injeta um <style> com fontes do sistema no elemento antes de capturar.
+      // O SVG foreignObject do dom-to-image-more NÃO carrega fontes externas
+      // (Google Fonts CDN), então precisamos usar fontes que existem no sistema.
+      // System font stack: San Francisco (Mac), Segoe UI (Windows) — lindas!
+      const fontStyle = document.createElement('style')
+      fontStyle.textContent = `
+        * {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+            'Helvetica Neue', Arial, sans-serif !important;
         }
+      `
+      element.appendChild(fontStyle)
 
-        const url = URL.createObjectURL(blob)
-        setPreviewUrl(url)
-        setExporting(false)
-        setExported(true)
+      let dataUrl: string
+      try {
+        // Usa dom-to-image-more (SVG foreignObject)
+        // Renderiza o HTML usando o motor do navegador dentro de um SVG,
+        // garantindo SVG, flexbox e alinhamentos PERFEITOS
+        dataUrl = await domtoimage.toPng(element, {
+          width: element.scrollWidth,
+          height: element.scrollHeight,
+          style: {
+            transform: 'scale(1)',
+            transformOrigin: 'top left',
+          },
+          scale: scale,
+          bgColor: transparent ? undefined : '#ffffff',
+        })
+      } finally {
+        // Remove o <style> injetado — garantido mesmo se toPng falhar
+        fontStyle.remove()
+      }
 
-        // Auto-download
-        downloadBlob(blob, `youtube-comment-${Date.now()}.${format}`)
-      }, formats.find(f => f.format === format)?.mime || 'image/png')
+      // Converte data URL para blob
+      const response = await fetch(dataUrl)
+      const blob = await response.blob()
+
+      const url = URL.createObjectURL(blob)
+      setPreviewUrl(url)
+      setExporting(false)
+      setExported(true)
+
+      // Auto-download
+      downloadBlob(blob, `youtube-comment-${Date.now()}.${format}`)
     } catch (err) {
       console.error('Export error:', err)
       setExporting(false)
@@ -95,7 +151,9 @@ export function ExportDialog({ commentRef, onClose }: ExportDialogProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-[#333]">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-[#f1f1f1]">Exportar Comentário</h2>
+          <h2 className="text-lg font-medium text-gray-900 dark:text-[#f1f1f1]">
+            🎯 Exportar Comentário
+          </h2>
           <motion.button
             onClick={onClose}
             className="p-1.5 hover:bg-gray-100 dark:hover:bg-[#333] rounded-lg transition-colors text-gray-500 dark:text-[#888]"
@@ -198,7 +256,7 @@ export function ExportDialog({ commentRef, onClose }: ExportDialogProps) {
                 ) : exported ? (
                   <>
                     <Check size={16} />
-                    Exportado!
+                    Exportado! 🎉
                   </>
                 ) : (
                   <>
@@ -220,8 +278,9 @@ export function ExportDialog({ commentRef, onClose }: ExportDialogProps) {
             </div>
           </div>
 
-          <div className="text-xs text-gray-400 dark:text-[#777] text-center">
-            Para máxima qualidade, use Playwright no backend (em breve)
+          <div className="text-xs text-gray-400 dark:text-[#777] text-center flex items-center justify-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+            Agora usando SVG foreignObject — fiel ao preview!
           </div>
         </div>
       </motion.div>

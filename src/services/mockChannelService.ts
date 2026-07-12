@@ -1,4 +1,28 @@
 import type { ChannelInfo } from '../types'
+import { searchChannelAnyMethod } from './youtubeApiService'
+import { parseYouTubeInput } from '../utils/youtube'
+
+const STORAGE_KEY = 'ycs-youtube-api-key'
+
+export function getYouTubeApiKey(): string {
+  try {
+    return localStorage.getItem(STORAGE_KEY) || ''
+  } catch {
+    return ''
+  }
+}
+
+export function setYouTubeApiKey(key: string): void {
+  try {
+    if (key) {
+      localStorage.setItem(STORAGE_KEY, key)
+    } else {
+      localStorage.removeItem(STORAGE_KEY)
+    }
+  } catch {
+    // localStorage might be unavailable
+  }
+}
 
 const mockChannels: Record<string, ChannelInfo> = {
   '@lofi': {
@@ -39,47 +63,52 @@ const mockChannels: Record<string, ChannelInfo> = {
 }
 
 function parseInput(input: string): { handle: string } | null {
-  if (!input.trim()) return null
-
-  // Handle URLs like https://youtube.com/@username
-  const urlMatch = input.match(/youtube\.com\/(@[\w.-]+)/)
-  if (urlMatch) return { handle: urlMatch[1] }
-
-  // Handle URLs like https://youtube.com/channel/UC...
-  const channelMatch = input.match(/youtube\.com\/channel\/(UC[\w-]+)/)
-  if (channelMatch) return { handle: `@channel-${channelMatch[1].slice(0, 8)}` }
-
-  // Handle @username format
-  const mentionMatch = input.match(/^@?([\w.-]+)$/)
-  if (mentionMatch) return { handle: `@${mentionMatch[1]}` }
-
-  return null
+  const handle = parseYouTubeInput(input)
+  if (!handle) return null
+  return { handle }
 }
 
-export function searchChannel(input: string): Promise<ChannelInfo | null> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const parsed = parseInput(input)
-      if (!parsed) {
-        resolve(null)
-        return
-      }
+export async function searchChannel(
+  input: string,
+  apiKey?: string
+): Promise<{ channel: ChannelInfo | null; fromApi: boolean; error?: string }> {
+  const parsed = parseInput(input)
+  if (!parsed) return { channel: null, fromApi: false }
 
-      const channel = mockChannels[parsed.handle.toLowerCase()]
-      if (channel) {
-        resolve(channel)
-        return
+  // Tries cascade: YouTube API → RSS Feed → HTML Scraping
+  // All methods are attempted regardless of whether an API key is provided
+  try {
+    const result = await searchChannelAnyMethod(input, apiKey || undefined)
+    if (result.channel) {
+      return {
+        channel: result.channel,
+        fromApi: result.method !== null, // true if ANY method worked
+        error: undefined,
       }
+    }
+    // All methods failed — pass through the error
+    const errorMsg = result.error || 'Não foi possível encontrar este canal.'
+    return { channel: null, fromApi: true, error: errorMsg }
+  } catch {
+    // Fall through to mock
+  }
 
-      // Generate a random channel from the input
-      const name = parsed.handle.replace('@', '').replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-      resolve({
-        id: `UC_${Math.random().toString(36).slice(2, 10)}`,
-        name,
-        handle: parsed.handle.startsWith('@') ? parsed.handle : `@${parsed.handle}`,
-        avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=ff4444&color=fff&bold=true&size=80`,
-        verified: Math.random() > 0.5,
-      })
-    }, 600)
-  })
+  // Fallback to mock data (immediate, no delay)
+  const channel = mockChannels[parsed.handle.toLowerCase()]
+  if (channel) {
+    return { channel, fromApi: false }
+  }
+
+  // Generate a random channel from the input
+  const name = parsed.handle.replace('@', '').replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+  return {
+    channel: {
+      id: `UC_${Math.random().toString(36).slice(2, 10)}`,
+      name,
+      handle: parsed.handle.startsWith('@') ? parsed.handle : `@${parsed.handle}`,
+      avatarUrl: '',
+      verified: Math.random() > 0.5,
+    },
+    fromApi: false,
+  }
 }
